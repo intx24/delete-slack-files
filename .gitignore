@@ -3,6 +3,7 @@
 # function
 function/get_file_list/docker-compose.override.yml
 function/get_file_list/.idea
+function/get_file_list/**/*.pyc
 
 # infra
 infra/*.js
