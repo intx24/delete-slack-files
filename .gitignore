@@ -1,13 +1,14 @@
 .idea
 
 # function
-function/docker-compose.override.yml
-function/.idea
+function/get_file_list/docker-compose.override.yml
+function/get_file_list/.idea
 
 # infra
 infra/*.js
 infra/!jest.config.js
 infra/*.d.ts
+infra/dist
 infra/node_modules
 infra/script/secrets.json
 
