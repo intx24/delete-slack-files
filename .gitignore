@@ -1,1 +1,18 @@
 .idea
+
+# function
+function/docker-compose.override.yml
+function/.idea
+
+# infra
+infra/*.js
+infra/!jest.config.js
+infra/*.d.ts
+infra/node_modules
+
+# CDK asset staging directory
+infra/.cdk.staging
+infra/cdk.out
+
+# dist
+infra/.dist
