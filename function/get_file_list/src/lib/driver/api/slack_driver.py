@@ -6,6 +6,7 @@ import requests
 from lib.domain.file.model.file import File
 from lib.domain.file.model.get_files_list_params import GetFilesListParams
 from lib.domain.file.repository.abstract_file_repository import AbstractFileRepository
+from lib.exception.external_api_call_exception import ExternalApiCallException
 
 
 class SlackDriver(AbstractFileRepository):
@@ -25,9 +26,14 @@ class SlackDriver(AbstractFileRepository):
             url += f'&user={params.user}'
 
         res = requests.get(url)
+        res_json = res.json()
+        print(res_json)
+
+        if res_json['ok'] is False:
+            raise ExternalApiCallException('calling files.list was failed. reason: ' + res_json['error'])
 
         files: List[File] = []
-        for v in res.json()['files']:
+        for v in res_json['files']:
             file = File(
                 id=v['id'],
                 created=v['created'],

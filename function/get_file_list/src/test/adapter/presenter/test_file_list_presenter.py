@@ -6,6 +6,7 @@ from lib.adapter.presenter.file_list_presenter import FileListPresenter
 from lib.adapter.presenter.file_list_presenter_helper import FileListPresenterHelper
 from lib.domain.file.model.file import File
 from lib.exception.environment_variables_exception import EnvironmentVariablesException
+from lib.exception.external_api_call_exception import ExternalApiCallException
 from lib.exception.validation_exception import ValidationException
 from lib.usecase.file.list.abstract_file_list_presenter import AbstractFileListPresenter
 from lib.usecase.file.list.file_list_output import FileListOutput
@@ -60,6 +61,7 @@ class TestFileListPresenter(TestCase):
 
         self.assertEqual(expected['statusCode'], actual['statusCode'])
         self.assertEqual(expected['headers'], actual['headers'])
+        self.assertTrue('v_test' in actual['body'])
 
     def test_complete__raise_environment_variables_exception(self):
         actual = self.__presenter.complete(FileListOutput([]), EnvironmentVariablesException('e_test'))
@@ -72,6 +74,20 @@ class TestFileListPresenter(TestCase):
 
         self.assertEqual(expected['statusCode'], actual['statusCode'])
         self.assertEqual(expected['headers'], actual['headers'])
+        self.assertTrue('e_test' in actual['body'])
+
+    def test_complete__raise_external_api_call_exception(self):
+        actual = self.__presenter.complete(FileListOutput([]), ExternalApiCallException('api_test'))
+        expected = {
+            'statusCode': HTTPStatus.INTERNAL_SERVER_ERROR,
+            'headers': {
+                'Content-Type': 'application/json'
+            },
+        }
+
+        self.assertEqual(expected['statusCode'], actual['statusCode'])
+        self.assertEqual(expected['headers'], actual['headers'])
+        self.assertTrue('api_test' in actual['body'])
 
     def test_complete__raise_exception(self):
         actual = self.__presenter.complete(FileListOutput([]), Exception('test'))
@@ -84,3 +100,4 @@ class TestFileListPresenter(TestCase):
 
         self.assertEqual(expected['statusCode'], actual['statusCode'])
         self.assertEqual(expected['headers'], actual['headers'])
+        self.assertTrue('test' in actual['body'])

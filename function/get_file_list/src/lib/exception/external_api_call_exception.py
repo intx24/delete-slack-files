@@ -1,0 +1,2 @@
+class ExternalApiCallException(Exception):
+    pass
