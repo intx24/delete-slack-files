@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import json
+import traceback
 from http import HTTPStatus
 from typing import Union, Optional, Dict
 
@@ -11,9 +12,9 @@ from lib.usecase.file.list.file_list_output import FileListOutput
 
 
 class FileListPresenter(AbstractFileListPresenter):
-    def complete(self, output: FileListOutput, ex: Optional[Exception]) -> \
+    def complete(self, output: FileListOutput, e: Optional[Exception]) -> \
             Dict[str, Union[int, Dict[str, str], str]]:
-        if ex is None:
+        if e is None:
             return {
                 'statusCode': HTTPStatus.OK,
                 'headers': {
@@ -24,7 +25,10 @@ class FileListPresenter(AbstractFileListPresenter):
                     'errors': []
                 }, default=FileListPresenterHelper.default_method)
             }
-        elif isinstance(ex, EnvironmentVariablesException):
+
+        e_message = ''.join(traceback.TracebackException.from_exception(e).format())
+
+        if isinstance(e, EnvironmentVariablesException):
             return {
                 'statusCode': HTTPStatus.INTERNAL_SERVER_ERROR,
                 'headers': {
@@ -33,11 +37,11 @@ class FileListPresenter(AbstractFileListPresenter):
                 'body': json.dumps({
                     'files': [],
                     'errors': [
-                        f'env var exception: {ex}'
+                        f'env var exception: {e_message}'
                     ]
                 }, default=FileListPresenterHelper.default_method)
             }
-        elif isinstance(ex, ValidationException):
+        elif isinstance(e, ValidationException):
             return {
                 'statusCode': HTTPStatus.BAD_REQUEST,
                 'headers': {
@@ -46,7 +50,7 @@ class FileListPresenter(AbstractFileListPresenter):
                 'body': json.dumps({
                     'files': [],
                     'errors': [
-                        f'validation exception: {ex}'
+                        f'validation exception: {e_message}'
                     ]
                 }, default=FileListPresenterHelper.default_method)
             }
@@ -59,7 +63,7 @@ class FileListPresenter(AbstractFileListPresenter):
                 'body': json.dumps({
                     'files': [],
                     'errors': [
-                        f'exception: {ex}'
+                        f'exception: {e_message}'
                     ]
                 }, default=FileListPresenterHelper.default_method)
             }

@@ -16,6 +16,6 @@ class EnvironmentVariables(AbstractEnvironmentVariables):
         token = os.getenv('SLACK_API_TOKEN')
 
         if not token:
-            raise EnvironmentVariablesException('tokenが存在しません')
+            raise EnvironmentVariablesException('token does not exists')
 
         self.token = token

@@ -55,16 +55,11 @@ class TestFileListPresenter(TestCase):
             'statusCode': HTTPStatus.BAD_REQUEST,
             'headers': {
                 'Content-Type': 'application/json'
-            },
-            'body': json.dumps({
-                'files': [],
-                'errors': [
-                    'validation exception: v_test'
-                ]
-            }, default=FileListPresenterHelper.default_method)
+            }
         }
 
-        self.assertEqual(expected, actual)
+        self.assertEqual(expected['statusCode'], actual['statusCode'])
+        self.assertEqual(expected['headers'], actual['headers'])
 
     def test_complete__raise_environment_variables_exception(self):
         actual = self.__presenter.complete(FileListOutput([]), EnvironmentVariablesException('e_test'))
@@ -73,15 +68,10 @@ class TestFileListPresenter(TestCase):
             'headers': {
                 'Content-Type': 'application/json'
             },
-            'body': json.dumps({
-                'files': [],
-                'errors': [
-                    'env var exception: e_test'
-                ]
-            }, default=FileListPresenterHelper.default_method)
         }
 
-        self.assertEqual(expected, actual)
+        self.assertEqual(expected['statusCode'], actual['statusCode'])
+        self.assertEqual(expected['headers'], actual['headers'])
 
     def test_complete__raise_exception(self):
         actual = self.__presenter.complete(FileListOutput([]), Exception('test'))
@@ -90,12 +80,7 @@ class TestFileListPresenter(TestCase):
             'headers': {
                 'Content-Type': 'application/json'
             },
-            'body': json.dumps({
-                'files': [],
-                'errors': [
-                    'exception: test'
-                ]
-            }, default=FileListPresenterHelper.default_method)
         }
 
-        self.assertEqual(expected, actual)
+        self.assertEqual(expected['statusCode'], actual['statusCode'])
+        self.assertEqual(expected['headers'], actual['headers'])

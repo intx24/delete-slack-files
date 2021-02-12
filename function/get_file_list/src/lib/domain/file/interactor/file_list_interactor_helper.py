@@ -28,12 +28,12 @@ class FileListInteractorHelper:
             input_data.ts_from()
             can_convert = True
         except Exception as e:
-            raise ValidationException(f'inputの値が不正です: {e}', e)
+            raise ValidationException(f'invalid input: {e}', e)
         else:
             valid = is_not_empty_str and is_not_empty_str_or_none and can_convert
 
             if not valid:
-                raise ValidationException('inputの値が不正です')
+                raise ValidationException('invalid input')
 
     @staticmethod
     def validate_param(params: GetFilesListParams):
@@ -41,9 +41,9 @@ class FileListInteractorHelper:
             is_not_empty_str_or_none = all(
                 map(lambda s: s is None or str.strip(s) != '', [params.user, params.channel]))
         except Exception as e:
-            raise ValidationException(f'paramsの値が不正です: {e}', e)
+            raise ValidationException(f'invalid params{e}', e)
         else:
             valid = is_not_empty_str_or_none
 
             if not valid:
-                raise ValidationException('paramsの値が不正です')
+                raise ValidationException('invalid params')

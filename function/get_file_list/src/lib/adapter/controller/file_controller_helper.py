@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import traceback
 from datetime import datetime
 from typing import Dict
 
@@ -17,8 +18,13 @@ class FileControllerHelper:
             datetime.strptime(event['date_from'], '%Y-%m-%d')
             can_convert = True
         except Exception as e:
-            raise ValidationException(f'eventの引数が不正です: {e}', e)
+            print('error')
+            print(e)
+            print('exc')
+            x: str = ''.join(traceback.TracebackException.from_exception(e).format())
+            print(x)
+            raise ValidationException(f'invalid event {e}', e)
         else:
             valid = is_not_empty_str and is_not_empty_str_or_none and can_convert
             if not valid:
-                raise ValidationException('eventの引数が不正です')
+                raise ValidationException('invalid event')
