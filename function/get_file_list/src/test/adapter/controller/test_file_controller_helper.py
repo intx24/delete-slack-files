@@ -1,13 +1,11 @@
 import base64
-from datetime import datetime
 from typing import Dict
-from unittest import TestCase
+from unittest import TestCase, mock
 from urllib.parse import urlencode
-
-import pytz
 
 from lib.adapter.controller.file_controller_helper import FileControllerHelper
 from lib.adapter.controller.model.slash_command_body import SlashCommandBody
+from lib.adapter.controller.model.slash_command_headers import SlashCommandHeaders
 from lib.exception.validation_exception import ValidationException
 
 
@@ -23,8 +21,7 @@ class TestFileControllerHelper(TestCase):
         actual = FileControllerHelper.get_command_header(event)
 
         self.assertEqual(actual.slack_signature, "sig1")
-        self.assertEqual(actual.slack_request_timestamp,
-                         datetime.fromtimestamp(1577804400, tz=pytz.timezone('Asia/Tokyo')))
+        self.assertEqual(actual.slack_request_timestamp, 1577804400)
 
     def test_get_command_body(self):
         body: Dict = {
@@ -49,28 +46,27 @@ class TestFileControllerHelper(TestCase):
         self.assertEqual('text1', actual.text)
 
     def test_valid_signature(self):
-        event1: Dict = {
-            'headers': {
-                'x-slack-request-timestamp': '1577804400',
-                'x-slack-signature': 'v0=c69bbddee42b0d184be364253e1fa52ae8c5b7886a606aae6abc3c20f9d79c2e'
-            },
-            'body': base64.b64encode(
-                'token=token_1&user_id=user_id1&channel_id=channel_id1&command=command_1&text=text_1'.encode('utf-8'))
-        }
+        headers1 = SlashCommandHeaders(
+            slack_request_timestamp=1531420618,
+            slack_signature='v0=a2114d57b48eac39b9ad189dd8316235a7b4a8d21a10bd27519666489c69b503'
+        )
+        body1 = 'token=xyzz0WbapA4vBCDEFasx0q6G&team_id=T1DC2JH3J&team_domain=testteamnow&channel_id=G8PSS9T3V' \
+                '&channel_name=foobar&user_id=U2CERLKJA&user_name=roadrunner&command=%2Fwebhook-collect&text' \
+                '=&response_url=https%3A%2F%2Fhooks.slack.com%2Fcommands%2FT1DC2JH3J%2F397700885554' \
+                '%2F96rGlfmibIGlgcZRskXaIFfN&trigger_id=398738663015.47445629121.803a0bc887a14d10d2c447fce8b6703c'
 
-        actual1 = FileControllerHelper.valid_signature(event1, 'secret')
+        actual1 = FileControllerHelper.valid_signature(headers1, body1, '8f742231b10e8888abcd99yyyzzz85a5')
         self.assertTrue(actual1)
 
-        event2: Dict = {
-            'headers': {
-                'x-slack-request-timestamp': '1577804400',
-                'x-slack-signature': 'v0=wrong'
-            },
-            'body': base64.b64encode('token=xyzz0WbapA4vBCDEFasx0q6G&team_id=T1DC2JH3J'.encode('utf-8'))
-
-        }
-
-        actual2 = FileControllerHelper.valid_signature(event2, 'secret')
+        headers2 = SlashCommandHeaders(
+            slack_request_timestamp=1531420618,
+            slack_signature='v0=wrong'
+        )
+        body2 = 'token=xyzz0WbapA4vBCDEFasx0q6G&team_id=T1DC2JH3J&team_domain=testteamnow&channel_id=G8PSS9T3V' \
+                '&channel_name=foobar&user_id=U2CERLKJA&user_name=roadrunner&command=%2Fwebhook-collect&text' \
+                '=&response_url=https%3A%2F%2Fhooks.slack.com%2Fcommands%2FT1DC2JH3J%2F397700885554' \
+                '%2F96rGlfmibIGlgcZRskXaIFfN&trigger_id=398738663015.47445629121.803a0bc887a14d10d2c447fce8b6703c'
+        actual2 = FileControllerHelper.valid_signature(headers2, body2, '8f742231b10e8888abcd99yyyzzz85a5')
         self.assertFalse(actual2)
 
     def test_parse_text(self):
@@ -167,6 +163,18 @@ class TestFileControllerHelper(TestCase):
             text=' to=2020/01/01 from=2020/11/11 --all-channels',
         )
         FileControllerHelper.validate_body(body8)
+
+    @mock.patch('time.time')
+    def test_validate_timestamp(self, mock_time):
+        timestamp1 = 1577804700
+        mock_time.return_value = 1577804400
+        actual = FileControllerHelper.valid_timestamp(timestamp1)
+        self.assertTrue(actual)
+
+        timestamp1 = 1577804800
+        mock_time.return_value = 1577804400
+        actual = FileControllerHelper.valid_timestamp(timestamp1)
+        self.assertFalse(actual)
 
     def test_validate_body__raise(self):
         body1 = SlashCommandBody(

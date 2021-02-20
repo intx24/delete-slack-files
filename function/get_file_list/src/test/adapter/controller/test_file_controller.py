@@ -2,7 +2,7 @@ import base64
 import json
 from http import HTTPStatus
 from typing import Optional, Union, Dict
-from unittest import TestCase
+from unittest import TestCase, mock
 from urllib.parse import urlencode
 
 from lib.adapter.controller.file_controller import FileController
@@ -72,7 +72,10 @@ class TestFileController(TestCase):
     def setUp(self) -> None:
         self.controller = FileController(MockFileListUseCase(), MockFileListPresenter(), MockEnvironmentVariables())
 
-    def test_list__ok(self):
+    @mock.patch('time.time')
+    def test_list__ok(self, mock_time):
+        mock_time.return_value = 1577804400
+
         body: Dict = {
             'token': 'token_1',
             'user_id': 'user_id1',
@@ -85,7 +88,7 @@ class TestFileController(TestCase):
         event: Dict = {
             'headers': {
                 'x-slack-request-timestamp': '1577804400',
-                'x-slack-signature': 'v0=ce8c8e193a9b6f69d6c3ed897d781d43cff0553eca5e067013dbc9b652a85edc'
+                'x-slack-signature': 'v0=ae57e7b278aa947c4aae097caf4e221c04b9323a738db24a57d868f86766f5c5'
             },
             'body': encoded
         }

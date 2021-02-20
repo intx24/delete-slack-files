@@ -37,8 +37,8 @@ class TestFileListInteractor(TestCase):
     def test_handle(self):
         input_data: FileListInput = FileListInput(
             token='token',
-            date_from='2020-01-01',
-            date_to='2020-11-11',
+            date_from='2020/01/01',
+            date_to='2020/11/11',
             channel='channel',
             user='user'
         )

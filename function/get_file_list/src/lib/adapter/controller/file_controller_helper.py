@@ -3,11 +3,9 @@ import base64
 import hashlib
 import hmac
 import re
-from datetime import datetime
+import time
 from typing import Dict, List
 from urllib.parse import parse_qs
-
-import pytz as pytz
 
 from lib.adapter.controller.model.parsed_text import ParsedText
 from lib.adapter.controller.model.slash_command_body import SlashCommandBody
@@ -20,11 +18,8 @@ class FileControllerHelper:
     def get_command_header(event: Dict) -> SlashCommandHeaders:
         headers = event['headers']
 
-        request_timestamp: datetime = datetime.fromtimestamp(int(headers['x-slack-request-timestamp']),
-                                                             tz=pytz.timezone('Asia/Tokyo'))
-
         return SlashCommandHeaders(
-            slack_request_timestamp=request_timestamp,
+            slack_request_timestamp=int(headers['x-slack-request-timestamp']),
             slack_signature=headers['x-slack-signature'],
         )
 
@@ -60,14 +55,17 @@ class FileControllerHelper:
         )
 
     @staticmethod
-    def valid_signature(event: Dict, secret: str):
-        headers = FileControllerHelper.get_command_header(event)
-        raw_body = FileControllerHelper.get_raw_body(event)
-        base_str = f'v0:{headers.slack_request_timestamp}:{raw_body}'.encode('utf-8')
-        secret_hmac = hmac.new(secret.encode('utf-8'), base_str, hashlib.sha256).hexdigest()
+    def valid_signature(headers: SlashCommandHeaders, raw_body: str, secret: str) -> bool:
+        base_str = f'v0:{headers.slack_request_timestamp}:{raw_body}'
+
+        secret_hmac = hmac.new(secret.encode('utf-8'), base_str.encode('utf-8'), hashlib.sha256).hexdigest()
         expected = f'v0={secret_hmac}'
         actual = headers.slack_signature
-        return expected == actual
+        return hmac.compare_digest(expected, actual)
+
+    @staticmethod
+    def valid_timestamp(timestamp: int) -> bool:
+        return abs(time.time() - timestamp) <= 60 * 5
 
     @staticmethod
     def validate_body(body: SlashCommandBody):

@@ -4,8 +4,10 @@ from typing import Union, Dict
 from lib.adapter.controller.file_controller_helper import FileControllerHelper
 from lib.adapter.controller.model.parsed_text import ParsedText
 from lib.adapter.controller.model.slash_command_body import SlashCommandBody
+from lib.adapter.controller.model.slash_command_headers import SlashCommandHeaders
 from lib.config.environment_variables import AbstractEnvironmentVariables
 from lib.exception.invalid_signature_expection import InvalidSignatureException
+from lib.exception.invalid_timestamp_exception import InvalidTimestampException
 from lib.usecase.file.list.abstract_file_list_presenter import AbstractFileListPresenter
 from lib.usecase.file.list.abstract_file_list_usecase import AbstractFileListUseCase
 from lib.usecase.file.list.file_list_input import FileListInput
@@ -21,11 +23,19 @@ class FileController:
 
     def list(self, event: Dict) -> Dict[str, Union[int, Dict[str, str], str]]:
         try:
-            valid_signature = True
             is_local = self.__env_vars.stage == 'local'
 
+            headers: SlashCommandHeaders = FileControllerHelper.get_command_header(event)
+            if not FileControllerHelper.valid_timestamp(headers.slack_request_timestamp):
+                raise InvalidTimestampException(headers.slack_request_timestamp)
+
+            raw_body = FileControllerHelper.get_raw_body(event)
+            valid_signature = True
             if not is_local:
-                valid_signature = FileControllerHelper.valid_signature(event, self.__env_vars.slack_signing_secret)
+                valid_signature = FileControllerHelper.valid_signature(
+                    headers,
+                    raw_body,
+                    self.__env_vars.slack_signing_secret)
             if not valid_signature:
                 raise InvalidSignatureException(event['headers'])
 

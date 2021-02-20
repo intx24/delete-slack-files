@@ -10,8 +10,8 @@ class TestFileListInteractorHelper(TestCase):
     def test_convert(self):
         input_data: FileListInput = FileListInput(
             token='token',
-            date_from='2020-01-01',
-            date_to='2020-11-11',
+            date_from='2020/01/01',
+            date_to='2020/11/11',
             channel='channel',
             user='user'
         )
@@ -29,31 +29,31 @@ class TestFileListInteractorHelper(TestCase):
     def test_valid_input__ok(self):
         input_data1: FileListInput = FileListInput(
             token='token',
-            date_from='2020-01-01',
-            date_to='2020-11-11'
+            date_from='2020/01/01',
+            date_to='2020/11/11'
         )
         FileListInteractorHelper.validate_input(input_data1)
 
         input_data2: FileListInput = FileListInput(
             token='token',
-            date_from='2020-01-01',
-            date_to='2020-11-11',
+            date_from='2020/01/01',
+            date_to='2020/11/11',
             user='user1'
         )
         FileListInteractorHelper.validate_input(input_data2)
 
         input_data3: FileListInput = FileListInput(
             token='token',
-            date_from='2020-01-01',
-            date_to='2020-11-11',
+            date_from='2020/01/01',
+            date_to='2020/11/11',
             channel='channel1'
         )
         FileListInteractorHelper.validate_input(input_data3)
 
         input_data4: FileListInput = FileListInput(
             token='token',
-            date_from='2020-01-01',
-            date_to='2020-11-11',
+            date_from='2020/01/01',
+            date_to='2020/11/11',
             channel='channel1',
             user='user1'
         )
@@ -62,8 +62,8 @@ class TestFileListInteractorHelper(TestCase):
     def test_valid_input__raise(self):
         input_data1: FileListInput = FileListInput(
             token='',
-            date_from='2020-01-01',
-            date_to='2020-11-11'
+            date_from='2020/01/01',
+            date_to='2020/11/11'
         )
         with self.assertRaises(ValidationException):
             FileListInteractorHelper.validate_input(input_data1)
@@ -71,14 +71,14 @@ class TestFileListInteractorHelper(TestCase):
         input_data2: FileListInput = FileListInput(
             token='token',
             date_from='',
-            date_to='2020-11-11'
+            date_to='2020/11/11'
         )
         with self.assertRaises(ValidationException):
             FileListInteractorHelper.validate_input(input_data2)
 
         input_data3: FileListInput = FileListInput(
             token='token',
-            date_from='2020-01-01',
+            date_from='2020/01/01',
             date_to=''
         )
         with self.assertRaises(ValidationException):
@@ -87,14 +87,14 @@ class TestFileListInteractorHelper(TestCase):
         input_data4: FileListInput = FileListInput(
             token='token',
             date_from='date_from',
-            date_to='2020-11-11'
+            date_to='2020/11/11'
         )
         with self.assertRaises(ValidationException):
             FileListInteractorHelper.validate_input(input_data4)
 
         input_data5: FileListInput = FileListInput(
             token='token',
-            date_from='2020-01-01',
+            date_from='2020/01/01',
             date_to='date_to'
         )
         with self.assertRaises(ValidationException):
@@ -102,8 +102,8 @@ class TestFileListInteractorHelper(TestCase):
 
         input_data6: FileListInput = FileListInput(
             token='token',
-            date_from='2020-01-01',
-            date_to='2020-11-11',
+            date_from='2020/01/01',
+            date_to='2020/11/11',
             user='',
         )
         with self.assertRaises(ValidationException):
@@ -111,8 +111,8 @@ class TestFileListInteractorHelper(TestCase):
 
         input_data7: FileListInput = FileListInput(
             token='token',
-            date_from='2020-01-01',
-            date_to='2020-11-11',
+            date_from='2020/01/01',
+            date_to='2020/11/11',
             channel='',
         )
         with self.assertRaises(ValidationException):
