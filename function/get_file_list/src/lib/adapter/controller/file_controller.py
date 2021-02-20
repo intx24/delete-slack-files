@@ -45,11 +45,8 @@ class FileController:
             FileControllerHelper.validate_body(body)
             parsed_text: ParsedText = FileControllerHelper.parse_text(body.text)
 
-            use_api_token = self.__env_vars.token is not None and is_local
-            token = self.__env_vars.token if use_api_token else body.token
-
             input_data: FileListInput = FileListInput(
-                token=token,
+                token=self.__env_vars.token,
                 date_from=parsed_text.date_from,
                 date_to=parsed_text.date_to,
                 channel=body.channel_id if parsed_text.all_channels else None,
