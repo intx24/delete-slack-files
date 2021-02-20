@@ -7,7 +7,7 @@ export class EcrStack extends cdk.Stack {
     constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
 
-        new ecr.Repository(this, 'DeleteSlackFilesRepository', {
+        new ecr.Repository(this, 'Repository', {
             repositoryName: StackUtil.getName('repo'),
             lifecycleRules: [
                 {
