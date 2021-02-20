@@ -7,7 +7,7 @@ from lib.config.container import Container
 app = get_app()
 
 
-@app.handlers.rest_api()
+@app.handlers.common()
 def handler(event, context):
     app.logger.info('========start get_file_list========')
     app.logger.info(event)

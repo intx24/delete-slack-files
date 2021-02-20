@@ -21,7 +21,11 @@ class FileController:
 
     def list(self, event: Dict) -> Dict[str, Union[int, Dict[str, str], str]]:
         try:
-            valid_signature = FileControllerHelper.valid_signature(event, self.__env_vars.slack_signing_secret)
+            valid_signature = True
+            is_local = self.__env_vars.stage == 'local'
+
+            if not is_local:
+                valid_signature = FileControllerHelper.valid_signature(event, self.__env_vars.slack_signing_secret)
             if not valid_signature:
                 raise InvalidSignatureException(event['headers'])
 
@@ -29,8 +33,11 @@ class FileController:
             FileControllerHelper.validate_body(body)
             parsed_text: ParsedText = FileControllerHelper.parse_text(body.text)
 
+            use_api_token = self.__env_vars.token is not None and is_local
+            token = self.__env_vars.token if use_api_token else body.token
+
             input_data: FileListInput = FileListInput(
-                token=body.token,
+                token=token,
                 date_from=parsed_text.date_from,
                 date_to=parsed_text.date_to,
                 channel=body.channel_id if parsed_text.all_channels else None,

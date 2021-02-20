@@ -4,13 +4,73 @@
 #
 #    pip-compile --output-file=./requirements.txt ./requirements.in
 #
+attrs==20.3.0
+    # via
+    #   -r ./requirements.in
+    #   jsonschema
+boto3==1.17.3
+    # via
+    #   -r ./requirements.in
+    #   jeffy
+botocore==1.20.3
+    # via
+    #   -r ./requirements.in
+    #   boto3
+    #   s3transfer
 certifi==2020.12.5
-    # via requests
+    # via
+    #   -r ./requirements.in
+    #   requests
 chardet==4.0.0
-    # via requests
+    # via
+    #   -r ./requirements.in
+    #   requests
+click==7.1.2
+    # via
+    #   -r ./requirements.in
+    #   pip-tools
 idna==2.10
-    # via requests
+    # via
+    #   -r ./requirements.in
+    #   requests
+jeffy==1.1.1
+    # via -r ./requirements.in
+jmespath==0.10.0
+    # via
+    #   -r ./requirements.in
+    #   boto3
+    #   botocore
+jsonschema==3.2.0
+    # via
+    #   -r ./requirements.in
+    #   jeffy
+pip-tools==5.5.0
+    # via -r ./requirements.in
+pyrsistent==0.17.3
+    # via
+    #   -r ./requirements.in
+    #   jsonschema
+python-dateutil==2.8.1
+    # via
+    #   -r ./requirements.in
+    #   botocore
 requests==2.25.1
     # via -r ./requirements.in
+s3transfer==0.3.4
+    # via
+    #   -r ./requirements.in
+    #   boto3
+six==1.15.0
+    # via
+    #   -r ./requirements.in
+    #   jsonschema
+    #   python-dateutil
 urllib3==1.26.3
-    # via requests
+    # via
+    #   -r ./requirements.in
+    #   botocore
+    #   requests
+
+# The following packages are considered to be unsafe in a requirements file:
+# pip
+# setuptools

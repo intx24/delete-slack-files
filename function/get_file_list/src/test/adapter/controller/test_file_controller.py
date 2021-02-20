@@ -40,9 +40,13 @@ class MockFileListUseCase(AbstractFileListUseCase):
 
 class MockEnvironmentVariables(AbstractEnvironmentVariables):
     slack_signing_secret: str
+    stage: str
+    token: str
 
     def __init__(self):
         self.slack_signing_secret = 'secret'
+        self.stage = 'test'
+        self.token = 'token'
 
 
 class MockFileListPresenter(AbstractFileListPresenter):

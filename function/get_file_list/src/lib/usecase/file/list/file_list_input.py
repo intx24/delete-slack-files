@@ -15,9 +15,9 @@ class FileListInput:
     user: Optional[str] = None
 
     def ts_from(self):
-        from_date: datetime = datetime.strptime(self.date_from, '%Y-%m-%d')
+        from_date: datetime = datetime.strptime(self.date_from, '%Y/%m/%d')
         return from_date.timestamp()
 
     def ts_to(self):
-        to_date: datetime = datetime.strptime(self.date_to, '%Y-%m-%d')
+        to_date: datetime = datetime.strptime(self.date_to, '%Y/%m/%d')
         return to_date.timestamp()

@@ -6,4 +6,5 @@ services:
       context: .
       dockerfile: docker/Dockerfile
     environment:
-      SLACK_API_TOKEN: token
+      STAGE: release
+      SLACK_SIGNING_SECRET: secret
