@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
-class SlackCommandBody:
+class SlashCommandBody:
     token: str
     user_id: str
     channel_id: str

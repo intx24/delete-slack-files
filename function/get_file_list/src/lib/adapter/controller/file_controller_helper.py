@@ -1,22 +1,44 @@
 #!/usr/bin/env python3
 import base64
+import hashlib
+import hmac
 import re
+from datetime import datetime
 from typing import Dict, List
 from urllib.parse import parse_qs
 
+import pytz as pytz
+
 from lib.adapter.controller.model.parsed_text import ParsedText
-from lib.adapter.controller.model.slack_command_body import SlackCommandBody
+from lib.adapter.controller.model.slash_command_body import SlashCommandBody
+from lib.adapter.controller.model.slash_command_headers import SlashCommandHeaders
 from lib.exception.validation_exception import ValidationException
 
 
 class FileControllerHelper:
     @staticmethod
-    def get_command_body(event: Dict) -> SlackCommandBody:
-        body = event['body']
-        decoded = base64.b64decode(body).decode()
-        decoded_dict = parse_qs(decoded)
+    def get_command_header(event: Dict) -> SlashCommandHeaders:
+        headers = event['headers']
 
-        return SlackCommandBody(
+        request_timestamp: datetime = datetime.fromtimestamp(int(headers['x-slack-request-timestamp']),
+                                                             tz=pytz.timezone('Asia/Tokyo'))
+
+        return SlashCommandHeaders(
+            slack_request_timestamp=request_timestamp,
+            slack_signature=headers['x-slack-signature'],
+        )
+
+    @staticmethod
+    def get_raw_body(event: Dict) -> str:
+        body = event['body']
+        return base64.b64decode(body).decode()
+
+    @staticmethod
+    def get_command_body(event: Dict) -> SlashCommandBody:
+        raw_body = FileControllerHelper.get_raw_body(event)
+        decoded_dict = parse_qs(raw_body)
+
+        return SlashCommandBody(
             token=decoded_dict['token'][0],
             user_id=decoded_dict['user_id'][0],
             channel_id=decoded_dict['channel_id'][0],
@@ -27,8 +49,8 @@ class FileControllerHelper:
     @staticmethod
     def parse_text(text: str) -> ParsedText:
         splitted: List[str] = text.split()
-        from_part = next(filter(lambda s: s.startsWith("from="), splitted), None)
-        to_part = next(filter(lambda s: s.startsWith("to="), splitted), None)
+        from_part = next(filter(lambda s: s.startswith("from="), splitted), None)
+        to_part = next(filter(lambda s: s.startswith("to="), splitted), None)
 
         return ParsedText(
             date_from=from_part.lstrip("from=").strip(),
@@ -38,14 +60,28 @@ class FileControllerHelper:
         )
 
     @staticmethod
-    def validate_body(body: SlackCommandBody):
+    def valid_signature(event: Dict, secret: str):
+        headers = FileControllerHelper.get_command_header(event)
+        raw_body = FileControllerHelper.get_raw_body(event)
+        base_str = f'v0:{headers.slack_request_timestamp}:{raw_body}'.encode('utf-8')
+        secret_hmac = hmac.new(secret.encode('utf-8'), base_str, hashlib.sha256).hexdigest()
+        expected = f'v0={secret_hmac}'
+        actual = headers.slack_signature
+        return expected == actual
+
+    @staticmethod
+    def validate_body(body: SlashCommandBody):
         try:
             valid = True
-            valid = valid and bool(body.token)
-            valid = valid and bool(body.user_id)
-            valid = valid and bool(body.channel_id)
-            valid = valid and bool(body.command)
-            valid = valid and bool(body.text)
+            validate_exist_targets: List[str] = [
+                body.token,
+                body.user_id,
+                body.channel_id,
+                body.command,
+                body.text
+            ]
+            for t in validate_exist_targets:
+                valid = valid and bool(t)
 
             text_splitted: List[str] = body.text.split()
             date_pattern: str = r'[12]\d{3}/(0[1-9]|1[0-2])/(0[1-9]|[12][0-9]|3[01])'

@@ -7,6 +7,7 @@ from typing import Union, Optional, Dict
 from lib.adapter.presenter.file_list_presenter_helper import FileListPresenterHelper
 from lib.exception.environment_variables_exception import EnvironmentVariablesException
 from lib.exception.external_api_call_exception import ExternalApiCallException
+from lib.exception.invalid_signature_expection import InvalidSignatureException
 from lib.exception.validation_exception import ValidationException
 from lib.usecase.file.list.abstract_file_list_presenter import AbstractFileListPresenter
 from lib.usecase.file.list.file_list_output import FileListOutput
@@ -65,6 +66,19 @@ class FileListPresenter(AbstractFileListPresenter):
                     'files': [],
                     'errors': [
                         f'external api error: {e_message}'
+                    ]
+                }, default=FileListPresenterHelper.default_method)
+            }
+        elif isinstance(e, InvalidSignatureException):
+            return {
+                'statusCode': HTTPStatus.FORBIDDEN,
+                'headers': {
+                    'Content-Type': 'application/json'
+                },
+                'body': json.dumps({
+                    'files': [],
+                    'errors': [
+                        f'invalid signature: {e_message}'
                     ]
                 }, default=FileListPresenterHelper.default_method)
             }

@@ -6,16 +6,16 @@ from lib.exception.environment_variables_exception import EnvironmentVariablesEx
 
 
 class AbstractEnvironmentVariables(metaclass=ABCMeta):
-    token: str
+    slack_signing_secret: str
 
 
 class EnvironmentVariables(AbstractEnvironmentVariables):
-    token: str
+    slack_signing_secret: str
 
     def __init__(self):
-        token = os.getenv('SLACK_API_TOKEN')
+        token = os.getenv('SLACK_SIGNING_SECRET')
 
         if not token:
-            raise EnvironmentVariablesException('token does not exists')
+            raise EnvironmentVariablesException('signing_secret does not exists')
 
         self.token = token

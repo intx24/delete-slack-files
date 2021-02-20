@@ -7,6 +7,7 @@ from lib.adapter.presenter.file_list_presenter_helper import FileListPresenterHe
 from lib.domain.file.model.file import File
 from lib.exception.environment_variables_exception import EnvironmentVariablesException
 from lib.exception.external_api_call_exception import ExternalApiCallException
+from lib.exception.invalid_signature_expection import InvalidSignatureException
 from lib.exception.validation_exception import ValidationException
 from lib.usecase.file.list.abstract_file_list_presenter import AbstractFileListPresenter
 from lib.usecase.file.list.file_list_output import FileListOutput
@@ -88,6 +89,19 @@ class TestFileListPresenter(TestCase):
         self.assertEqual(expected['statusCode'], actual['statusCode'])
         self.assertEqual(expected['headers'], actual['headers'])
         self.assertTrue('api_test' in actual['body'])
+
+    def test_complete__raise_invalid_signature_exception(self):
+        actual = self.__presenter.complete(FileListOutput([]), InvalidSignatureException('signature_test'))
+        expected = {
+            'statusCode': HTTPStatus.FORBIDDEN,
+            'headers': {
+                'Content-Type': 'application/json'
+            },
+        }
+
+        self.assertEqual(expected['statusCode'], actual['statusCode'])
+        self.assertEqual(expected['headers'], actual['headers'])
+        self.assertTrue('signature_test' in actual['body'])
 
     def test_complete__raise_exception(self):
         actual = self.__presenter.complete(FileListOutput([]), Exception('test'))
