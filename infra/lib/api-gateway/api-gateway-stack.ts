@@ -9,15 +9,17 @@ export class ApiGatewayStack extends cdk.Stack {
     constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
 
-        const repository = ecr.Repository.fromRepositoryName(
+        const repository = ecr.Repository.fromRepositoryAttributes(
             this,
-            'StartExecutionFunctionRepository',
-            StackUtil.getName('repo')
+            'StartExecutionFunctionRepository', {
+                repositoryArn: `arn:aws:ecr:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:repository/${StackUtil.getName('repo')}`,
+                repositoryName: StackUtil.getName('repo'),
+            }
         );
 
         const startExecutionFunction = new lambda.DockerImageFunction(this, 'StartExecutionFunction', {
             code: DockerImageCode.fromEcr(repository, {
-                tag: 'slack-execution-function',
+                tag: 'start-execution-function',
             }),
         });
 
@@ -28,6 +30,5 @@ export class ApiGatewayStack extends cdk.Stack {
         });
         restApi.root.addResource('execute')
             .addMethod('POST', new apiGateway.LambdaIntegration(startExecutionFunction))
-
     }
 }

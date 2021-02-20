@@ -7,7 +7,7 @@ import {ApiGatewayStack} from "../lib/api-gateway/api-gateway-stack";
 
 const app = new cdk.App();
 
-// const apiGatewayStack = new ApiGatewayStack(app, StackUtil.getStackName('APIGATEWAY'));
+const apiGatewayStack = new ApiGatewayStack(app, StackUtil.getStackName('APIGATEWAY'));
 
 new EcrStack(app, StackUtil.getStackName('REPOSITORY'))
-    // .addDependency(apiGatewayStack);
+    .addDependency(apiGatewayStack);
