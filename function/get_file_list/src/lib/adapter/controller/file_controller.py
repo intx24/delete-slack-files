@@ -25,17 +25,19 @@ class FileController:
         try:
             is_local = self.__env_vars.stage == 'local'
 
-            headers: SlashCommandHeaders = FileControllerHelper.get_command_header(event)
-            if not FileControllerHelper.valid_timestamp(headers.slack_request_timestamp):
-                raise InvalidTimestampException(headers.slack_request_timestamp)
-
-            raw_body = FileControllerHelper.get_raw_body(event)
+            valid_timestamp = True
             valid_signature = True
             if not is_local:
+                headers: SlashCommandHeaders = FileControllerHelper.get_command_header(event)
+
+                raw_body = FileControllerHelper.get_raw_body(event)
                 valid_signature = FileControllerHelper.valid_signature(
                     headers,
                     raw_body,
                     self.__env_vars.slack_signing_secret)
+                valid_timestamp = FileControllerHelper.valid_timestamp(headers.slack_request_timestamp)
+            if not valid_timestamp:
+                raise InvalidTimestampException(event['headers'])
             if not valid_signature:
                 raise InvalidSignatureException(event['headers'])
 
