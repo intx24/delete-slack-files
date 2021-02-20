@@ -1,0 +1,14 @@
+version: "3.9"
+services:
+  start-execution-function:
+    image: local:start_execution-function
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - 8082:8080
+    environment:
+      STAGE: local
+      SLACK_SIGNING_SECRET: secret
+    volumes:
+      - ./src:/var/task

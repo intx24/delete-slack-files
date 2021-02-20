@@ -4,6 +4,10 @@
 function/get_file_list/docker-compose.override.yml
 function/get_file_list/.idea
 function/get_file_list/**/*.pyc
+function/start_execution/docker-compose.override.yml
+function/start_execution/.idea
+function/start_execution/venv
+function/start_execution/**/*.pyc
 
 # infra
 infra/*.js
