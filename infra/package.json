@@ -22,6 +22,8 @@
   },
   "dependencies": {
     "@aws-cdk/aws-apigateway": "^1.90.1",
+    "@aws-cdk/aws-apigatewayv2": "^1.90.1",
+    "@aws-cdk/aws-apigatewayv2-integrations": "^1.90.1",
     "@aws-cdk/aws-ecr": "^1.90.1",
     "@aws-cdk/aws-lambda": "^1.89.1",
     "@aws-cdk/core": "1.90.1",

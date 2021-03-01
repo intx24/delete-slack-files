@@ -11,9 +11,10 @@ export class EcrStack extends cdk.Stack {
             repositoryName: StackUtil.getName('repo'),
             lifecycleRules: [
                 {
-                    tagStatus: TagStatus.ANY,
+                    tagStatus: TagStatus.UNTAGGED,
                     maxImageCount: 1,
-                    description: 'leave only one image.'
+                    rulePriority: 1,
+                    description: 'leave only one untagged.'
                 }
             ],
             imageScanOnPush: false,

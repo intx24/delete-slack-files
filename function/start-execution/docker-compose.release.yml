@@ -1,7 +1,7 @@
 version: "3.9"
 services:
-  start-execution-function:
-    image: local:start_execution-function
+  start-execution:
+    image: local:start-execution
     build:
       context: .
       dockerfile: docker/Dockerfile

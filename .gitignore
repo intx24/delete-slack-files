@@ -1,13 +1,11 @@
 .idea
 
 # function
-function/get_file_list/docker-compose.override.yml
-function/get_file_list/.idea
-function/get_file_list/**/*.pyc
-function/start_execution/docker-compose.override.yml
-function/start_execution/.idea
-function/start_execution/venv
-function/start_execution/**/*.pyc
+function/**/docker-compose.override.yml
+function/**/.idea
+function/**/venv
+function/**/*.pyc
+function/**/secrets*
 
 # infra
 infra/*.js
@@ -15,7 +13,7 @@ infra/!jest.config.js
 infra/*.d.ts
 infra/dist
 infra/node_modules
-infra/script/secrets.json
+infra/**/secrets*
 
 # CDK asset staging directory
 infra/.cdk.staging
